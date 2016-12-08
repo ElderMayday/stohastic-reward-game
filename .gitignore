@@ -1,0 +1,4 @@
+*.exe
+StohasticRewardGame/bin/
+StohasticRewardGame/.vs/
+StohasticRewardGame/obj/
