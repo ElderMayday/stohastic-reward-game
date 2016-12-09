@@ -8,16 +8,16 @@ namespace StohasticRewardGame.Backend
 {
     class GameActionRandom : GameAction
     {
-        protected RandomValue random;
+        protected RandomValue randomValue;
 
-        public GameActionRandom(RandomValue random) : base()
+        public GameActionRandom(RandomValue randomValue) : base()
         {
-            this.random = random;
+            this.randomValue = randomValue;
         }
 
-        protected override double Reward()
+        public override double Reward()
         {
-            return random.Generate();
+            return randomValue.Generate();
         }
     }
 }
