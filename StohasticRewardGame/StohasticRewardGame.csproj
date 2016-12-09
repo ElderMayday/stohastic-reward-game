@@ -46,6 +46,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Backend\Game.cs" />
+    <Compile Include="Backend\GameAction.cs" />
+    <Compile Include="Backend\GameActionRandom.cs" />
+    <Compile Include="Backend\RandomValue.cs" />
+    <Compile Include="Backend\RandomValueNormal.cs" />
+    <Compile Include="Backend\Selector.cs" />
+    <Compile Include="Backend\SelectorBoltzmannIndependent.cs" />
+    <Compile Include="Backend\SelectorIndependent.cs" />
+    <Compile Include="Backend\SelectorMulti.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
