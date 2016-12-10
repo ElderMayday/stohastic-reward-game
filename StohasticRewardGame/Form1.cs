@@ -36,15 +36,20 @@ namespace StohasticRewardGame
             action[2, 1] = new GameActionRandom(new RandomValueNormal(0.0, sigma));
             action[2, 2] = new GameActionRandom(new RandomValueNormal(5.0, sigma));
 
+            /*
             Game game = new Game(action, 
                 new SelectorBoltzmannIndependent(action.GetLength(0), 5.0), 
                 new SelectorBoltzmannIndependent(action.GetLength(1), 5.0));
+                */
 
-            game.NextStep();
-            game.NextStep();
-            game.NextStep();
-            game.NextStep();
-            game.NextStep();
+            Game game = new Game(action,
+                new SelectorBoltzmannMulti(action.GetLength(0), action.GetLength(1), 5.0),
+                new SelectorBoltzmannMulti(action.GetLength(1), action.GetLength(0), 5.0));
+
+            int round = 100;
+
+            for (int i = 0; i < round; i++)
+                game.NextStep();
         }
     }
 }
