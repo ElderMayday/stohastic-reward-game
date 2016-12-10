@@ -12,7 +12,7 @@ namespace StohasticRewardGame.Backend
         protected const double e = 2.71828;
         protected static Random random = new Random();
 
-        public SelectorBoltzmannIndependent(double tau) : base()
+        public SelectorBoltzmannIndependent(int numberOfActions, double tau) : base(numberOfActions)
         {
             this.tau = tau;
         }
@@ -23,8 +23,8 @@ namespace StohasticRewardGame.Backend
 
             List<double> exp = new List<double>();
 
-            foreach (var a in action)
-                exp.Add(Math.Pow(SelectorBoltzmannIndependent.e, a.Estimate / tau));
+            foreach (var estimate in Estimate)
+                exp.Add(Math.Pow(SelectorBoltzmannIndependent.e, estimate / tau));
 
             double sum = exp.Sum();
 

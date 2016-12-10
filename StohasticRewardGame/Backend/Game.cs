@@ -12,12 +12,11 @@ namespace StohasticRewardGame.Backend
         public Selector selector1 { get; protected set; }
         public Selector selector2 { get; protected set; }
 
-        public Game(GameAction[,] action)
+        public Game(GameAction[,] action, Selector selector1, Selector selector2)
         {
             this.Action = action;
-
-            selector1 = new SelectorBoltzmannIndependent(Action.Length, 0.1);
-            selector2 = new SelectorBoltzmannIndependent(Action.GetLength(1), 0.1);
+            this.selector1 = selector1;
+            this.selector2 = selector2;            
         }
 
         public void NextStep()

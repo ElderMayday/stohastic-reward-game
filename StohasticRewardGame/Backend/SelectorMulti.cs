@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StohasticRewardGame.Backend
 {
-    class SelectorMulti
+    abstract class SelectorMulti : Selector
     {
         public GameAction[,] action;
 
@@ -15,7 +15,7 @@ namespace StohasticRewardGame.Backend
             action = new GameAction[numberOfActions1, numberOfActions2];
         }
 
-        public void updateReward(int action1, int reward2, double reward)
+        public void updateReward(int action1, int action2, double reward)
         {
 
         }
