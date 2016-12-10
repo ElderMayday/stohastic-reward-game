@@ -26,42 +26,70 @@ namespace StohasticRewardGame
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
-            GameAction[,] action = new GameAction[3, 3];
+            int round = 5000;
+            int repetition = 100;
+            double[,] reward1 = new double[round, repetition]; // matrixes of results, rows to be averaged
+            double[,] reward2 = new double[round, repetition];
 
             double sigma0 = 0.0;
             double sigma1 = 0.0;
             double sigma = 0.0;
+            double temp1 = 2.0;
+            double temp2 = 2.0;
 
-            if (radioCase1.Checked)
+            for (int iteration = 0; iteration < repetition; iteration++)
             {
-                sigma0 = Math.Pow(0.2, 2.0);
-                sigma1 = Math.Pow(0.2, 2.0);
-                sigma = Math.Pow(0.2, 2.0);
-            }
-            else if (radioCase2.Checked)
-            {
-                sigma0 = Math.Pow(4.0, 2.0);
-                sigma1 = Math.Pow(0.1, 2.0);
-                sigma = Math.Pow(0.1, 2.0);
-            }
-            else
-            {
-                sigma0 = Math.Pow(0.1, 2.0);
-                sigma1 = Math.Pow(4.0, 2.0);
-                sigma = Math.Pow(0.1, 2.0);
-            }
+                GameAction[,] action = new GameAction[3, 3];
 
-            action[0, 0] = new GameActionRandom(new RandomValueNormal(11.0, sigma0));
-            action[0, 1] = new GameActionRandom(new RandomValueNormal(-30.0, sigma));
-            action[0, 2] = new GameActionRandom(new RandomValueNormal(0.0, sigma));
-            action[1, 0] = new GameActionRandom(new RandomValueNormal(-30.0, sigma));
-            action[1, 1] = new GameActionRandom(new RandomValueNormal(7.0, sigma1));
-            action[1, 2] = new GameActionRandom(new RandomValueNormal(6.0, sigma));
-            action[2, 0] = new GameActionRandom(new RandomValueNormal(0.0, sigma));
-            action[2, 1] = new GameActionRandom(new RandomValueNormal(0.0, sigma));
-            action[2, 2] = new GameActionRandom(new RandomValueNormal(5.0, sigma));
+                if (radioCase1.Checked)
+                {
+                    sigma0 = Math.Pow(0.2, 2.0);
+                    sigma1 = Math.Pow(0.2, 2.0);
+                    sigma = Math.Pow(0.2, 2.0);
+                }
+                else if (radioCase2.Checked)
+                {
+                    sigma0 = Math.Pow(4.0, 2.0);
+                    sigma1 = Math.Pow(0.1, 2.0);
+                    sigma = Math.Pow(0.1, 2.0);
+                }
+                else
+                {
+                    sigma0 = Math.Pow(0.1, 2.0);
+                    sigma1 = Math.Pow(4.0, 2.0);
+                    sigma = Math.Pow(0.1, 2.0);
+                }
 
-            int round = 5000;
+                action[0, 0] = new GameActionRandom(new RandomValueNormal(11.0, sigma0));
+                action[0, 1] = new GameActionRandom(new RandomValueNormal(-30.0, sigma));
+                action[0, 2] = new GameActionRandom(new RandomValueNormal(0.0, sigma));
+                action[1, 0] = new GameActionRandom(new RandomValueNormal(-30.0, sigma));
+                action[1, 1] = new GameActionRandom(new RandomValueNormal(7.0, sigma1));
+                action[1, 2] = new GameActionRandom(new RandomValueNormal(6.0, sigma));
+                action[2, 0] = new GameActionRandom(new RandomValueNormal(0.0, sigma));
+                action[2, 1] = new GameActionRandom(new RandomValueNormal(0.0, sigma));
+                action[2, 2] = new GameActionRandom(new RandomValueNormal(5.0, sigma));
+
+                Game game = new Game(action,
+                    new SelectorBoltzmannIndependent(action.GetLength(0), temp1),
+                    new SelectorBoltzmannIndependent(action.GetLength(1), temp1));
+
+                for (int i = 0; i < round; i++)
+                {
+                    game.NextStep();
+                    reward1[i, iteration] = game.TotalReward;
+                }
+
+                game = new Game(action,
+                    new SelectorBoltzmannMulti(action.GetLength(0), action.GetLength(1), temp2),
+                    new SelectorBoltzmannMulti(action.GetLength(1), action.GetLength(0), temp2));
+
+                for (int i = 0; i < round; i++)
+                {
+                    game.NextStep();
+                    reward2[i, iteration] = game.TotalReward;
+                }
+            }
 
             chart.Series.Clear();
             chart.ChartAreas[0].AxisX.Title = "Episode";
@@ -75,14 +103,16 @@ namespace StohasticRewardGame
             chart.Series[nameSeries1].Color = Color.Red;
             chart.Series[nameSeries1].BorderWidth = 2;
 
-            Game game = new Game(action,
-                new SelectorBoltzmannIndependent(action.GetLength(0), 5.0),
-                new SelectorBoltzmannIndependent(action.GetLength(1), 5.0));
-
             for (int i = 0; i < round; i++)
             {
-                game.NextStep();
-                chart.Series[nameSeries1].Points.AddXY(i + 1, game.TotalReward);
+                double sum = 0.0;
+
+                for (int j = 0; j < repetition; j++)
+                    sum += reward1[i, j];
+
+                sum /= repetition;
+
+                chart.Series[nameSeries1].Points.AddXY(i + 1, sum);
             }
 
             string nameSeries2 = "Learner type two";
@@ -91,14 +121,16 @@ namespace StohasticRewardGame
             chart.Series[nameSeries2].Color = Color.Blue;
             chart.Series[nameSeries2].BorderWidth = 2;
 
-            game = new Game(action,
-                new SelectorBoltzmannMulti(action.GetLength(0), action.GetLength(1), 5.0),
-                new SelectorBoltzmannMulti(action.GetLength(1), action.GetLength(0), 5.0));
-
             for (int i = 0; i < round; i++)
             {
-                game.NextStep();
-                chart.Series[nameSeries2].Points.AddXY(i + 1, game.TotalReward);
+                double sum = 0.0;
+
+                for (int j = 0; j < repetition; j++)
+                    sum += reward2[i, j];
+
+                sum /= repetition;
+
+                chart.Series[nameSeries2].Points.AddXY(i + 1, sum);
             }
         }
     }
