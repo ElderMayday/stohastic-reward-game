@@ -30,12 +30,13 @@ namespace StohasticRewardGame
             int repetition = 100;
             double[,] reward1 = new double[round, repetition]; // matrixes of results, rows to be averaged
             double[,] reward2 = new double[round, repetition];
+            double[,] reward3 = new double[round, repetition];
 
             double sigma0 = 0.0;
             double sigma1 = 0.0;
             double sigma = 0.0;
-            double temp1 = 2.0;
-            double temp2 = 2.0;
+            double temp1 = 1.0;
+            double temp2 = 1.0;
 
             for (int iteration = 0; iteration < repetition; iteration++)
             {
@@ -89,6 +90,16 @@ namespace StohasticRewardGame
                     game.NextStep();
                     reward2[i, iteration] = game.TotalReward;
                 }
+
+                game = new Game(action,
+                    new SelectorBestMulti(action.GetLength(0), action.GetLength(1)),
+                    new SelectorBestMulti(action.GetLength(1), action.GetLength(0)));
+
+                for (int i = 0; i < round; i++)
+                {
+                    game.NextStep();
+                    reward3[i, iteration] = game.TotalReward;
+                }
             }
 
             chart.Series.Clear();
@@ -131,6 +142,24 @@ namespace StohasticRewardGame
                 sum /= repetition;
 
                 chart.Series[nameSeries2].Points.AddXY(i + 1, sum);
+            }
+
+            string nameSeries3 = "Learner best response";
+            chart.Series.Add(nameSeries3);
+            chart.Series[nameSeries3].ChartType = SeriesChartType.Line;
+            chart.Series[nameSeries3].Color = Color.Green;
+            chart.Series[nameSeries3].BorderWidth = 2;
+
+            for (int i = 0; i < round; i++)
+            {
+                double sum = 0.0;
+
+                for (int j = 0; j < repetition; j++)
+                    sum += reward3[i, j];
+
+                sum /= repetition;
+
+                chart.Series[nameSeries3].Points.AddXY(i + 1, sum);
             }
         }
     }

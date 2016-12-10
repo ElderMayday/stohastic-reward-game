@@ -53,6 +53,7 @@
     <Compile Include="Backend\RandomValue.cs" />
     <Compile Include="Backend\RandomValueNormal.cs" />
     <Compile Include="Backend\Selector.cs" />
+    <Compile Include="Backend\SelectorBestMulti.cs" />
     <Compile Include="Backend\SelectorBoltzmannIndependent.cs" />
     <Compile Include="Backend\SelectorBoltzmannMulti.cs" />
     <Compile Include="Backend\SelectorIndependent.cs" />
